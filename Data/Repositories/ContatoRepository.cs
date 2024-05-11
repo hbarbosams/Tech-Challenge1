@@ -1,5 +1,5 @@
 using Data.Context;
-using Data.Interfaces;
+using Domain.Interfaces.Repositories;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,6 +19,12 @@ public class ContatoRepository : IContatoRepository
         {
             await _context.Contato.AddAsync(contato);
             await _context.SaveChangesAsync();
+            
+            contato.FoneDdd = await _context.FoneDdd
+                .Include(i => i.Estado)
+                .ThenInclude(i => i.Regiao)
+                .SingleAsync(s => s.Id == contato.FoneDddId);
+            
             return contato;
         }
         catch (Exception ex)
@@ -44,6 +50,23 @@ public class ContatoRepository : IContatoRepository
         catch (Exception ex)
         {
             throw new Exception("Erro ao obter contatos por DDD", ex);
+        }
+    }
+
+    public async Task<Contato?> ObterContatoId(int id)
+    {
+        try
+        {
+            var contato = await _context.Contato
+                .Include(i => i.FoneDdd)
+                .ThenInclude(i => i.Estado)
+                .ThenInclude(i => i.Regiao)
+                .SingleOrDefaultAsync(s => s.Id == id);
+            return contato;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Erro ao obter contato", ex);
         }
     }
 

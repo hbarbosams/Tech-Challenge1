@@ -8,7 +8,8 @@ public class Contato
     public string Nome { get; set; }
     public string Email { get; set; }
     public string Telefone { get; set; }
+    public int FoneDddId { get; set; }
     
     [ForeignKey("FoneDddId")]
-    public FoneDdd FoneDdd { get; set; } 
+    public FoneDdd? FoneDdd { get; set; } 
 }
