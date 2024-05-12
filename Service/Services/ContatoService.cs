@@ -62,6 +62,10 @@ public class ContatoService : IContatoService
         try
         {
             var contatoAtualizado = await _contatoRepository.AtualizarContato(contato);
+            if (contatoAtualizado.Id == 0)
+            {
+                return new RespostaPadrao(true, null, "Contato não encontrado");
+            }
             return new RespostaPadrao(true, contatoAtualizado, "Contato atualizado com sucesso");
         }
         catch (Exception ex)
@@ -75,6 +79,10 @@ public class ContatoService : IContatoService
         try
         {
             var contatoExcluido = await _contatoRepository.ExcluirContato(id);
+            if (!contatoExcluido)
+            {
+                return new RespostaPadrao(true, contatoExcluido, "Contato não encontrado");
+            }
             return new RespostaPadrao(true, contatoExcluido, "Contato excluido com sucesso");
         }
         catch (Exception ex)

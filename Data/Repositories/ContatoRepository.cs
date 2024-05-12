@@ -74,9 +74,20 @@ public class ContatoRepository : IContatoRepository
     {
         try
         {
-            _context.Contato.Update(contato);
-            await _context.SaveChangesAsync();
-            return contato;
+            var contatoAntigo = await _context.Contato.FindAsync(contato.Id);
+            if (contatoAntigo != null)
+            {
+                _context.Entry(contatoAntigo).CurrentValues.SetValues(contato);
+                await _context.SaveChangesAsync();
+                
+                contato.FoneDdd = await _context.FoneDdd
+                    .Include(i => i.Estado)
+                    .ThenInclude(i => i.Regiao)
+                    .SingleAsync(s => s.Id == contato.FoneDddId);
+                return contato;    
+            }
+
+            return new Contato();
         }
         catch (Exception ex)
         {
