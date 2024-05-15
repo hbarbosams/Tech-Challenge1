@@ -18,16 +18,22 @@ public class ContatoController : Controller
     [HttpPost]
     public async Task<IActionResult> CriarContato([FromBody] Contato contato)
     {
-        var contatoCriado = await _contatoService.CriarContato(contato);
-        if (contatoCriado.Sucesso)
+        if(ModelState.IsValid) 
         {
-            var request = HttpContext.Request;
-            var contatoCriadoId = (Contato)contatoCriado.Resposta!;
-            var baseUrl = string.Concat($"{request.Scheme}://{request.Host}/api/{contatoCriadoId.Id}");
-            return Created(new Uri(baseUrl), contatoCriado);
+            var contatoCriado = await _contatoService.CriarContato(contato);
+            if (contatoCriado.Sucesso)
+            {
+                var request = HttpContext.Request;
+                var contatoCriadoId = (Contato)contatoCriado.Resposta!;
+                var baseUrl = string.Concat($"{request.Scheme}://{request.Host}/api/{contatoCriadoId.Id}");
+                return Created(new Uri(baseUrl), contatoCriado);
+            }
+
+            return StatusCode(500, contatoCriado);
         }
 
-        return StatusCode(500, contatoCriado);
+        return BadRequest();
+
     }
     
     [HttpGet("ddd/{ddd}")]
