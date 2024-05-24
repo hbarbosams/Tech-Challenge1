@@ -28,7 +28,7 @@ public class Contato
     [StringLength(2, MinimumLength = 2, ErrorMessage = "O ID do telefone deve ter 2 caracteres")]
     public int FoneDddId { get; set; }
 
-    
+
     [ForeignKey("FoneDddId")]
     public FoneDdd? FoneDdd { get; set; } 
 }
