@@ -20,12 +20,11 @@ public class Contato
 
 
     [Required(ErrorMessage = "O telefone é obrigatório")]
-    [StringLength(9, MinimumLength = 9, ErrorMessage = "O número de telefone deve ter 9 dígitos")]
+    [StringLength(10, MinimumLength = 8, ErrorMessage = "O número de telefone deve ter entre 8 e 10 dígitos")]
     public string Telefone { get; set; }
 
 
     [Required(ErrorMessage = "O ID do telefone é obrigatório")]
-    [StringLength(2, MinimumLength = 2, ErrorMessage = "O ID do telefone deve ter 2 caracteres")]
     public int FoneDddId { get; set; }
 
 

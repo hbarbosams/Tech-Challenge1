@@ -14,7 +14,7 @@ public static class PhoneNumberValidator
         // Remove espaços, hífens e parênteses
         string cleanedPhoneNumber = Regex.Replace(phoneNumber, @"[\s\-\(\)]", "");
 
-        // Verifica se contém apenas dígitos e tem um tamanho entre 10 e 15 (ajuste conforme necessário)
-        return Regex.IsMatch(cleanedPhoneNumber, @"^\d{10,15}$");
+        // Verifica se contém apenas dígitos e tem um tamanho de 9 (ajuste conforme necessário)
+        return Regex.IsMatch(cleanedPhoneNumber, @"^\d{8,10}$");
     }
 }
