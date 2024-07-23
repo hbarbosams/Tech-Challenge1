@@ -1,4 +1,5 @@
 using CrossCutting.Dependencies;
+using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +20,24 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// Início - Config Prometheus
+var counter = Metrics.CreateCounter("TechChallenge", "Contador de requisições do projeto TechChallenge.",
+    new CounterConfiguration
+    {
+        LabelNames = new[] { "method", "endpoint" }
+    });
+
+app.Use((context, next) =>
+{
+    counter.WithLabels(context.Request.Method, context.Request.Path).Inc();
+    return next();
+});
+
+app.UseMetricServer();
+app.UseHttpMetrics();
+// Fim - Config Prometheus
+
 app.MapControllers();
 
 app.UseHttpsRedirection();
