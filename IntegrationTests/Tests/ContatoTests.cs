@@ -98,7 +98,7 @@ public class ContatoTests : BaseIntegrationTest
         // Act
         var httpRequest = await HttpClient.PutAsync("/api/contato", contatoContent);
         
-
+         
         // Assert
         var requestContentString = await httpRequest.Content.ReadAsStringAsync();
         RespostaPadrao respostaPadrao = JsonConvert.DeserializeObject<RespostaPadrao>(requestContentString)!;
