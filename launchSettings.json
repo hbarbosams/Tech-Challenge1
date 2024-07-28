@@ -5,7 +5,8 @@
       "commandVersion": "1.0",
       "serviceActions": {
         "application": "StartDebugging"
-      }
+      },
+      "applicationUrl": "https://localhost:5001"
     }
   }
 }
