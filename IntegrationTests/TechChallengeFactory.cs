@@ -18,7 +18,6 @@ public class TechChallengeFactory : WebApplicationFactory<Program>, IAsyncLifeti
     public async Task InitializeAsync() => await PostgresFixture.InitializeAsync();
     async Task IAsyncLifetime.DisposeAsync() => await PostgresFixture.DisposeAsync();
     
-
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.ConfigureTestServices(services =>
