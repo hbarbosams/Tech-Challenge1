@@ -21,11 +21,11 @@ Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-co
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Consumers", "Consumers", "{08FC53D0-2A16-4F7F-8140-E9C9F408C3EE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadastroConsumer", "..\CadastroConsumer\CadastroConsumer.csproj", "{60A18B61-963D-47A3-866B-F33C185007C1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadastroConsumer", "Consumers\CadastroConsumer\CadastroConsumer.csproj", "{60A18B61-963D-47A3-866B-F33C185007C1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlteracaoConsumer", "..\AlteracaoConsumer\AlteracaoConsumer.csproj", "{3E139BD5-C3E8-480F-903F-08D252493C69}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlteracaoConsumer", "Consumers\AlteracaoConsumer\AlteracaoConsumer.csproj", "{3E139BD5-C3E8-480F-903F-08D252493C69}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExclusaoConsumer", "..\ExclusaoConsumer\ExclusaoConsumer.csproj", "{B77303A8-5AAB-4DAE-8439-9132591288B2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExclusaoConsumer", "Consumers\ExclusaoConsumer\ExclusaoConsumer.csproj", "{B77303A8-5AAB-4DAE-8439-9132591288B2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
