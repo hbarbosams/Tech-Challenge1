@@ -9,6 +9,5 @@ public class ConfigureService
     public static void ConfigureDependenciesService(IServiceCollection serviceCollection)
     {
         serviceCollection.AddTransient<IContatoService, ContatoService>();
-        
     }
 }

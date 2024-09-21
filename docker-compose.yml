@@ -22,3 +22,13 @@ services:
         - ./.containers/techchallenge-db:/var/lib/postegresql/data
     ports:
         - "5432:5432"
+
+  techchallenge.rabbitMQ:
+    image: masstransit/rabbitmq
+    container_name: techchallenge.rabbitMQ
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+       - 5672:5672
+       - 15672:15672
