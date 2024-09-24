@@ -1,5 +1,7 @@
+using Domain.DTOs.Saida;
 using Domain.Interfaces.Services;
 using Domain.Models;
+using Domain.QueueRequest;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,7 +25,7 @@ public class ContatoController : Controller
     [HttpPost]
     public async Task<IActionResult> CriarContato([FromBody] Contato contato)
     {
-        if(ModelState.IsValid) 
+        if (ModelState.IsValid)
         {
             try
             {
@@ -69,12 +71,9 @@ public class ContatoController : Controller
     {
         try
         {
-            var contato = await _contatoService.ObterContatoId(id);
-            if (contato.Resposta == null) return BadRequest(contato.Mensagem);
-
             var nomeFila = _configuration.GetSection("MassTransit")["NomeFilaExclusao"] ?? string.Empty;
             var endpoint = await _bus.GetSendEndpoint(new Uri($"queue:{nomeFila}"));
-            await endpoint.Send(contato.Resposta);
+            await endpoint.Send(new ContatoRequest { ContatoId = id });
 
             return Ok();
         }
@@ -84,27 +83,30 @@ public class ContatoController : Controller
         }
     }
 
+    [HttpGet("{id}")]
+    public async Task<IActionResult> ObterContatoId(int id)
+    {
+        var nomeFila = _configuration.GetSection("MassTransit")["NomeFilaConsulta"] ?? string.Empty;
+        var contato = await _bus.CreateRequestClient<ContatoRequest>(new Uri($"queue:{nomeFila}"))
+            .GetResponse<RespostaPadrao>(new ContatoRequest { ContatoId = id });
+
+        if (contato.Message.Sucesso)
+        {
+            return Ok(contato);
+        }
+
+        return StatusCode(500, contato);
+    }
+
     [HttpGet("ddd/{ddd}")]
     public async Task<IActionResult> ListarContatosDdd(string ddd)
     {
         var listaContatos = await _contatoService.ListarContatosDdd(ddd);
         if (listaContatos.Sucesso)
         {
-            return Ok(listaContatos);    
+            return Ok(listaContatos);
         }
 
         return StatusCode(500, listaContatos);
-    }
-    
-    [HttpGet("{id}")]
-    public async Task<IActionResult> ObterContatoId(int id)
-    {
-        var contato = await _contatoService.ObterContatoId(id);
-        if (contato.Sucesso)
-        {
-            return Ok(contato);    
-        }
-
-        return StatusCode(500, contato);
     }
 }
