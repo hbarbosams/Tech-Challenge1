@@ -3,6 +3,7 @@ using Domain.DTOs.Saida;
 using Domain.Models;
 using FluentAssertions;
 using Newtonsoft.Json;
+using RabbitMQ.Client;
 
 namespace IntegrationTests.Tests;
 
@@ -28,20 +29,16 @@ public class ContatoTests : BaseIntegrationTest
 
         // Act
         var httpRequest = await HttpClient.PostAsync("/api/contato", contatoContent);
+        var contatoFila = GetMessageFromQueue<Contato>("fila_cadastro");
         
 
         // Assert
-        var requestContentString = await httpRequest.Content.ReadAsStringAsync();
-        RespostaPadrao respostaPadrao = JsonConvert.DeserializeObject<RespostaPadrao>(requestContentString)!;
-        Contato contatoCriado = JsonConvert.DeserializeObject<Contato>(JsonConvert.SerializeObject(respostaPadrao.Resposta))!;
-
-        
         Assert.True(httpRequest.IsSuccessStatusCode);
-        Assert.NotNull(contatoCriado);
-        contatoCriado.Nome.Should().Be(contato.Nome);
-        contatoCriado.Email.Should().Be(contato.Email);
-        contatoCriado.Telefone.Should().Be(contato.Telefone);
-        contatoCriado.FoneDddId.Should().Be(contato.FoneDddId);
+        Assert.NotNull(contatoFila);
+        contatoFila.Nome.Should().Be(contato.Nome);
+        contatoFila.Email.Should().Be(contato.Email);
+        contatoFila.Telefone.Should().Be(contato.Telefone);
+        contatoFila.FoneDddId.Should().Be(contato.FoneDddId);
     }
     
     
@@ -58,23 +55,21 @@ public class ContatoTests : BaseIntegrationTest
         };
         DbContext.Contato.Add(contato);
         await DbContext.SaveChangesAsync();
+        var contatoContent = new StringContent(JsonConvert.SerializeObject(contato), Encoding.UTF8, "application/json");
 
         // Act
-        var httpRequest = await HttpClient.GetAsync($"/api/contato/{contato.Id}");
+        var httpRequest = await HttpClient.PostAsync($"/api/contato", contatoContent);
+        var contatoFila = GetMessageFromQueue<Contato>("fila_cadastro");
         
 
         // Assert
-        var requestContentString = await httpRequest.Content.ReadAsStringAsync();
-        RespostaPadrao respostaPadrao = JsonConvert.DeserializeObject<RespostaPadrao>(requestContentString)!;
-        Contato contatoCriado = JsonConvert.DeserializeObject<Contato>(JsonConvert.SerializeObject(respostaPadrao.Resposta))!;
-
         
         Assert.True(httpRequest.IsSuccessStatusCode);
-        Assert.NotNull(contatoCriado);
-        contatoCriado.Nome.Should().Be(contato.Nome);
-        contatoCriado.Email.Should().Be(contato.Email);
-        contatoCriado.Telefone.Should().Be(contato.Telefone);
-        contatoCriado.FoneDddId.Should().Be(contato.FoneDddId);
+        Assert.NotNull(contatoFila);
+        contatoFila.Nome.Should().Be(contato.Nome);
+        contatoFila.Email.Should().Be(contato.Email);
+        contatoFila.Telefone.Should().Be(contato.Telefone);
+        contatoFila.FoneDddId.Should().Be(contato.FoneDddId);
     }
     
     [Fact]
@@ -97,19 +92,42 @@ public class ContatoTests : BaseIntegrationTest
 
         // Act
         var httpRequest = await HttpClient.PutAsync("/api/contato", contatoContent);
-        
+        var contatoFila = GetMessageFromQueue<Contato>("fila_alteracao");
          
         // Assert
-        var requestContentString = await httpRequest.Content.ReadAsStringAsync();
-        RespostaPadrao respostaPadrao = JsonConvert.DeserializeObject<RespostaPadrao>(requestContentString)!;
-        Contato contatoCriado = JsonConvert.DeserializeObject<Contato>(JsonConvert.SerializeObject(respostaPadrao.Resposta))!;
-
-        
         Assert.True(httpRequest.IsSuccessStatusCode);
-        Assert.NotNull(contatoCriado);
-        contatoCriado.Nome.Should().Be(contato.Nome);
-        contatoCriado.Email.Should().Be(contato.Email);
-        contatoCriado.Telefone.Should().Be(contato.Telefone);
-        contatoCriado.FoneDddId.Should().Be(contato.FoneDddId);
+        Assert.NotNull(contatoFila);
+        contatoFila.Nome.Should().Be(contato.Nome);
+        contatoFila.Email.Should().Be(contato.Email);
+        contatoFila.Telefone.Should().Be(contato.Telefone);
+        contatoFila.FoneDddId.Should().Be(contato.FoneDddId);
+    }
+    
+    
+    private T? GetMessageFromQueue<T>(string queueName)
+    {
+        var factory = new ConnectionFactory() { HostName = "localhost", UserName = "guest", Password = "guest" };
+    
+        using var connection = factory.CreateConnection();
+        using var channel = connection.CreateModel();
+
+        // Consome uma única mensagem da fila (se houver)
+        var result = channel.BasicGet(queueName, true);
+
+        if (result == null)
+            return default(T); // Nenhuma mensagem na fila
+
+        // Converte o corpo da mensagem de byte[] para string
+        var messageBody = Encoding.UTF8.GetString(result.Body.ToArray());
+            
+        // Deserializa a mensagem de volta para o objeto Contato
+        var envelope = JsonConvert.DeserializeObject<MassTransitMessageEnvelope<T>>(messageBody);
+        return envelope.Message;
+    }
+    
+    public class MassTransitMessageEnvelope<T>
+    {
+        [JsonProperty("message")]
+        public T Message { get; set; }
     }
 }
