@@ -21,7 +21,7 @@ services:
     volumes:
         - ./.containers/techchallenge-db:/var/lib/postegresql/data
     ports:
-        - "5432:5432"
+        - "5434:5432"
 
   techchallenge.rabbitMQ:
     image: masstransit/rabbitmq

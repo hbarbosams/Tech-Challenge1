@@ -1,5 +1,7 @@
 using CrossCutting.Dependencies;
+using Data.Context;
 using MassTransit;
+using Microsoft.EntityFrameworkCore;
 using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -42,8 +44,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// In�cio - Config Prometheus
-var counter = Metrics.CreateCounter("TechChallenge", "Contador de requisi��es do projeto TechChallenge.",
+// In�cio - Config Prometheus
+var counter = Metrics.CreateCounter("TechChallenge", "Contador de requisi��es do projeto TechChallenge.",
     new CounterConfiguration
     {
         LabelNames = new[] { "method", "endpoint" }
@@ -58,6 +60,23 @@ app.Use((context, next) =>
 app.UseMetricServer();
 app.UseHttpMetrics();
 // Fim - Config Prometheus
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var db = services.GetRequiredService<TechChallengeContext>();
+        db.Database.Migrate();
+        Console.WriteLine("Migrações executadas");
+    }
+    catch (Exception e)
+    {
+        Console.WriteLine($"Erro ao realizar migração automática: {e.Message}, Detalhes: {e.InnerException?.Message}");
+        throw new Exception(
+            $"Erro ao realizar migração: {e.Message}");
+    }    
+}
 
 app.MapControllers();
 

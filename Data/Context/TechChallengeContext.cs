@@ -5,7 +5,7 @@ namespace Data.Context;
 
 public class TechChallengeContext : DbContext
 {
-    public TechChallengeContext(DbContextOptions options) : base(options) { }
+    public TechChallengeContext(DbContextOptions<TechChallengeContext> options) : base(options) { }
 
     public DbSet<Regiao> Regiao { get; set; }
     public DbSet<Estado> Estado { get; set; }

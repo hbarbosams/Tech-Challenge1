@@ -1,10 +1,10 @@
-﻿using Domain.QueueRequest;
+﻿using Domain.Interfaces.Services;
+using Domain.QueueRequest;
 using MassTransit;
-using Service.Services;
 
 namespace ConsultaConsumer.Events;
 
-public class ContatoConsultadoConsumer(ContatoService contatoService) : IConsumer<ContatoRequest>
+public class ContatoConsultadoConsumer(IContatoService contatoService) : IConsumer<ContatoRequest>
 {
     public async Task Consume(ConsumeContext<ContatoRequest> context)
     {
