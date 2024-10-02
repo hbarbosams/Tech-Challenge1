@@ -59,6 +59,7 @@ app.Use((context, next) =>
 
 app.UseMetricServer();
 app.UseHttpMetrics();
+;
 // Fim - Config Prometheus
 
 using (var scope = app.Services.CreateScope())
