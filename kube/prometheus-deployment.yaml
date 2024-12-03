@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  labels:
+    app: prometheus
+  annotations:
+    description: "Deployment do Prometheus"
+    maintainer: "Hugo e Guilherme"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      containers:
+      - name: prometheus
+        image: prom/prometheus:latest
+        args: 
+        - "--config.file=/etc/prometheus/prometheus.yml"
+        - "--storage.tsdb.path=/prometheus"
+        ports:
+        - containerPort: 9090
+        volumeMounts:
+        - name: prometheus-storage
+          mountPath: /prometheus
+        - name: prometheus-config
+          mountPath: /etc/prometheus/prometheus.yml  # Mounts config file
+          subPath: prometheus.yml  # Uses subPath to treat it as a file
+      volumes:
+      - name: prometheus-storage
+        persistentVolumeClaim:
+          claimName: prometheus-pvc
+      - name: prometheus-config
+        configMap:
+          name: prometheus-config 
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: prometheus-pv
+spec:
+  capacity:
+    storage: 1Gi  # Adjust as needed
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:  # For local storage; change if using a cloud provider
+    path: /mnt/data/prometheus  # Ensure this directory exists on the node
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: prometheus-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi  # Must match or be less than PV capacity
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus
+spec:
+  selector:
+    app: prometheus
+  type: NodePort
+  ports:
+  - protocol: TCP
+    port: 9090
+    targetPort: 9090
+    nodePort: 30010
