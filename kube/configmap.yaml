@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: application-config
+data:
+  # ConnectionStrings
+  ConnectionStrings__TechChallenge: "Server=database-service.default.svc.cluster.local;Port=5432;Database=postgres;User ID=postgres;Password=postgres;Trust Server Certificate=True"
+  # MassTransit
+  MassTransit__Servidor: "rabbit-service.default.svc.cluster.local"

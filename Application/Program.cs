@@ -20,6 +20,8 @@ var servidor = configuration.GetSection("MassTransit")["Servidor"] ?? string.Emp
 var usuario = configuration.GetSection("MassTransit")["Usuario"] ?? string.Empty;
 var senha = configuration.GetSection("MassTransit")["Senha"] ?? string.Empty;
 
+Console.WriteLine(servidor);
+
 builder.Services.AddMassTransit(x =>
 {
     x.UsingRabbitMq((context, cfg) =>
@@ -76,7 +78,7 @@ using (var scope = app.Services.CreateScope())
         Console.WriteLine($"Erro ao realizar migração automática: {e.Message}, Detalhes: {e.InnerException?.Message}");
         throw new Exception(
             $"Erro ao realizar migração: {e.Message}");
-    }    
+    }
 }
 
 app.MapControllers();

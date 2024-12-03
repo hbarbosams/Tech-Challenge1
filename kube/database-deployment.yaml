@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: database-deployment
+  labels:
+    app: database
+  annotations:
+    description: "Deployment do banco de dados"
+    maintainer: "Hugo e Guilherme"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: database
+  template:
+    metadata:
+      labels:
+        app: database
+    spec:
+      containers:
+      - name: database
+        image: postgres:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5432 # The port your application listens on
+        env:
+        - name: POSTGRES_USER
+          value: "postgres" # Database username
+        - name: POSTGRES_PASSWORD
+          value: "postgres" # Database password
+        - name: POSTGRES_DB
+          value: "postgres" # Initial database name
+        volumeMounts:
+        - name: postgres-storage
+          mountPath: /var/lib/postgresql/data # Default data directory for PostgreSQL
+      volumes:
+      - name: postgres-storage
+        persistentVolumeClaim:
+          claimName: postgres-pvc
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgres-pv
+spec:
+  capacity:
+    storage: 1Gi #storage size
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: /mnt/data/postgres
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: database-service # Name of the service
+spec:
+  selector:
+    app: database # Matches the label in the deployment
+  type: NodePort
+  ports:
+  - protocol: TCP
+    port: 5432         # Port exposed by the service
+    targetPort: 5432   # Port the pod is listening on
+    nodePort: 30001

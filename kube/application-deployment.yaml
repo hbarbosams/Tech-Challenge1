@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: application-deployment
+  labels:
+    app: application
+  annotations:
+    description: "Deployment da API"
+    maintainer: "Hugo e Guilherme"
+spec:
+  replicas: 2 
+  selector:
+    matchLabels:
+      app: application
+  template:
+    metadata:
+      labels:
+        app: application
+    spec:
+      containers:
+      - name: application
+        image: application  
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        env:
+        - name: ConnectionStrings__TechChallenge
+          valueFrom:
+            configMapKeyRef:
+              name: application-config
+              key: ConnectionStrings__TechChallenge
+        - name: MassTransit__Servidor
+          valueFrom:
+            configMapKeyRef:
+              name: application-config
+              key: MassTransit__Servidor
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: application-service
+spec:
+  selector:
+    app: application
+  type: NodePort
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080 # Container's port
+    nodePort: 30000   # External port

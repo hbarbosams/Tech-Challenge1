@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consumers-deployment
+  labels:
+    app: consumers
+  annotations:
+    description: "Deployment dos Consumers"
+    maintainer: "Hugo e Guilherme"
+spec:
+  replicas: 2 
+  selector:
+    matchLabels:
+      app: consumers
+  template:
+    metadata:
+      labels:
+        app: consumers
+    spec:
+      containers:
+      - name: alteracao-consumer
+        image: alteracao-consumer  
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5000
+        env:
+        - name: ConnectionStrings__TechChallenge
+          valueFrom:
+            configMapKeyRef:
+              name: application-config
+              key: ConnectionStrings__TechChallenge
+        - name: MassTransit__Servidor
+          valueFrom:
+            configMapKeyRef:
+              name: application-config
+              key: MassTransit__Servidor
+      - name: cadastro-consumer
+        image: cadastro-consumer  
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5001
+        env:
+        - name: ConnectionStrings__TechChallenge
+          valueFrom:
+            configMapKeyRef:
+              name: application-config
+              key: ConnectionStrings__TechChallenge
+        - name: MassTransit__Servidor
+          valueFrom:
+            configMapKeyRef:
+              name: application-config
+              key: MassTransit__Servidor
+      - name: consulta-consumer
+        image: consulta-consumer  
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5002
+        env:
+        - name: ConnectionStrings__TechChallenge
+          valueFrom:
+            configMapKeyRef:
+              name: application-config
+              key: ConnectionStrings__TechChallenge
+        - name: MassTransit__Servidor
+          valueFrom:
+            configMapKeyRef:
+              name: application-config
+              key: MassTransit__Servidor
+      - name: exclusao-consumer
+        image: exclusao-consumer  
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5003
+        env:
+        - name: ConnectionStrings__TechChallenge
+          valueFrom:
+            configMapKeyRef:
+              name: application-config
+              key: ConnectionStrings__TechChallenge
+        - name: MassTransit__Servidor
+          valueFrom:
+            configMapKeyRef:
+              name: application-config
+              key: MassTransit__Servidor

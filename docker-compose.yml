@@ -3,7 +3,7 @@ version: '3.4'
 services:
   application:
     image: ${DOCKER_REGISTRY-}application
-    container_name: techchallenge.api
+    container_name: application
     build:
       context: .
       dockerfile: Application/Dockerfile
@@ -11,8 +11,8 @@ services:
       - "5016:5016"
       - "7065:8080"
     depends_on:
-      - techchallenge.database
-      - techchallenge.rabbitMQ
+      - techchallenge-database
+      - techchallenge-rabbitMQ
     networks:
       - techchallenge-network
 
@@ -23,8 +23,8 @@ services:
       context: .
       dockerfile: Consumers/AlteracaoConsumer/Dockerfile
     depends_on:
-      - techchallenge.database
-      - techchallenge.rabbitMQ
+      - techchallenge-database
+      - techchallenge-rabbitMQ
       - application
     networks:
       - techchallenge-network
@@ -36,8 +36,8 @@ services:
       context: .
       dockerfile: Consumers/CadastroConsumer/Dockerfile
     depends_on:
-      - techchallenge.database
-      - techchallenge.rabbitMQ
+      - techchallenge-database
+      - techchallenge-rabbitMQ
       - application
     networks:
       - techchallenge-network
@@ -49,8 +49,8 @@ services:
       context: .
       dockerfile: Consumers/ConsultaConsumer/Dockerfile
     depends_on:
-      - techchallenge.database
-      - techchallenge.rabbitMQ
+      - techchallenge-database
+      - techchallenge-rabbitMQ
       - application
     networks:
       - techchallenge-network
@@ -62,15 +62,15 @@ services:
       context: .
       dockerfile: Consumers/ExclusaoConsumer/Dockerfile
     depends_on:
-      - techchallenge.database
-      - techchallenge.rabbitMQ
+      - techchallenge-database
+      - techchallenge-rabbitMQ
       - application
     networks:
       - techchallenge-network
 
-  techchallenge.database:
+  techchallenge-database:
     image: postgres:latest
-    container_name: techchallenge.database
+    container_name: techchallenge-database
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
@@ -82,9 +82,9 @@ services:
     networks:
       - techchallenge-network
 
-  techchallenge.rabbitMQ:
+  techchallenge-rabbitMQ:
     image: masstransit/rabbitmq
-    container_name: techchallenge.rabbitMQ
+    container_name: techchallenge-rabbitMQ
     environment:
       RABBITMQ_DEFAULT_USER: admin
       RABBITMQ_DEFAULT_PASS: admin
