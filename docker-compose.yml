@@ -8,27 +8,93 @@ services:
       context: .
       dockerfile: Application/Dockerfile
     ports:
-        - "5000:5000"
-        - "5001:5001"
+      - "5016:5016"
+      - "7065:8080"
+    depends_on:
+      - techchallenge.database
+      - techchallenge.rabbitMQ
+    networks:
+      - techchallenge-network
+
+  alteracao-consumer:
+    image: ${DOCKER_REGISTRY-}alteracao-consumer
+    container_name: alteracao-consumer
+    build:
+      context: .
+      dockerfile: Consumers/AlteracaoConsumer/Dockerfile
+    depends_on:
+      - techchallenge.database
+      - techchallenge.rabbitMQ
+      - application
+    networks:
+      - techchallenge-network
+
+  cadastro-consumer:
+    image: ${DOCKER_REGISTRY-}cadastro-consumer
+    container_name: cadastro-consumer
+    build:
+      context: .
+      dockerfile: Consumers/CadastroConsumer/Dockerfile
+    depends_on:
+      - techchallenge.database
+      - techchallenge.rabbitMQ
+      - application
+    networks:
+      - techchallenge-network
+
+  consulta-consumer:
+    image: ${DOCKER_REGISTRY-}consulta-consumer
+    container_name: consulta-consumer
+    build:
+      context: .
+      dockerfile: Consumers/ConsultaConsumer/Dockerfile
+    depends_on:
+      - techchallenge.database
+      - techchallenge.rabbitMQ
+      - application
+    networks:
+      - techchallenge-network
+
+  exclusao-consumer:
+    image: ${DOCKER_REGISTRY-}exclusao-consumer
+    container_name: exclusao-consumer
+    build:
+      context: .
+      dockerfile: Consumers/ExclusaoConsumer/Dockerfile
+    depends_on:
+      - techchallenge.database
+      - techchallenge.rabbitMQ
+      - application
+    networks:
+      - techchallenge-network
 
   techchallenge.database:
     image: postgres:latest
     container_name: techchallenge.database
-    environment: 
-        - POSTGRES_DB=postgres
-        - POSTGRES_USER=postgres
-        - POSTGRES_PASSWORD=postgres
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
     volumes:
-        - ./.containers/techchallenge-db:/var/lib/postegresql/data
+      - ./.containers/techchallenge-db:/var/lib/postegresql/data
     ports:
-        - "5434:5432"
+      - "5432:5432"
+    networks:
+      - techchallenge-network
 
   techchallenge.rabbitMQ:
     image: masstransit/rabbitmq
     container_name: techchallenge.rabbitMQ
     environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
     ports:
-       - 5672:5672
-       - 15672:15672
+      - 5672:5672
+      - 15672:15672
+    networks:
+      - techchallenge-network
+
+networks:
+  techchallenge-network:
+    # Specify driver options
+    driver: bridge

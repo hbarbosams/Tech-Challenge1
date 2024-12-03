@@ -1,0 +1,50 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Application",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}/Application/Application.csproj"
+        },
+        {
+            "name": "Create Consumer",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}/Consumers/CadastroConsumer/CadastroConsumer.csproj"
+        },
+        {
+            "name": "Read Consumer",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}/Consumers/ConsultaConsumer/ConsultaConsumer.csproj"
+        },
+        {
+            "name": "Update Consumer",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}/Consumers/AlteracaoConsumer/AlteracaoConsumer.csproj"
+        },
+        {
+            "name": "Delete Consumer",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}/Consumers/ExclusaoConsumer/ExclusaoConsumer.csproj"
+        },
+    ],
+    "compounds": [
+        {
+            "name": "Application and Consumers",
+            "configurations": [
+                "Application",
+                "Create Consumer",
+                "Read Consumer",
+                "Update Consumer",
+                "Delete Consumer"
+            ]
+        }
+    ]
+}
