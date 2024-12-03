@@ -20,30 +20,16 @@ public class TechChallengeFactory : WebApplicationFactory<Program>, IAsyncLifeti
     public async Task InitializeAsync()
     {
         await PostgresFixture.InitializeAsync();
-        await RabbitMqFixture.InitializeAsync();
-    } 
+    }
     async Task IAsyncLifetime.DisposeAsync()
     {
         await PostgresFixture.DisposeAsync();
-        await RabbitMqFixture.DisposeAsync();
     }
-    
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.ConfigureTestServices(services =>
         {
-            services.Configure<MassTransitHostOptions>(options =>
-            {
-                options.WaitUntilStarted = true; // Configuração de espera para garantir que o bus comece antes dos testes
-            });
-
-            services.Configure<RabbitMqTransportOptions>(options =>
-            {
-                options.Host = "localhost";
-                options.User = "guest";
-                options.Pass = "guest";
-            });
-            
             services.Remove<DbContextOptions<TechChallengeContext>>();
             services.AddDbContext<TechChallengeContext>(options =>
             {
@@ -54,5 +40,5 @@ public class TechChallengeFactory : WebApplicationFactory<Program>, IAsyncLifeti
             db.Database.Migrate();
         });
     }
-    
+
 }
